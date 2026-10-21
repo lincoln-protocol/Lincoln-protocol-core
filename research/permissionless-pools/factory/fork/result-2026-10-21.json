@@ -1,0 +1,123 @@
+{
+ "opened": {
+  "factory": "0xb9c822b19584c82927c6db26710a72b4b14065fa",
+  "pool": "0x5E35c5Ed0bb8D57f4c8946AC921cA53F76eBbDe9",
+  "provider": "0x51E9D93845ae4F78cE944831052CC2C532038e0B",
+  "registry": "0xc325a35d714697BC702110C6257305466Db57031",
+  "creator": "0x76682B6951708858B5849Fa6000B12F27C28fA26",
+  "createPoolGas": "7620879",
+  "buy": "0xf178b06aD305082b7b9093D60C6ddb4aCe8c8a2e",
+  "sell": "0x02Fe6D4D0be5284BfefCF2c061800cc3CB7e0b4b",
+  "routeGas": [
+   "3196058",
+   "3178778"
+  ],
+  "maxDeposit": "340282366920938463463374607431768211455",
+  "registryProvider": "0x51E9D93845ae4F78cE944831052CC2C532038e0B",
+  "registryGuardian": "0x9CF17a6E3c75D200f58283A165C442a8A3994555",
+  "buyTrusted": true,
+  "poolCount": "1"
+ },
+ "buy": {
+  "tx": "0x60c074cd0fd45a3974c267ee5df748cceb0406fd2cf6697aa24deea17c4a77b8",
+  "gasUsed": "2072959",
+  "from": "0x3a41547735591f0a2d55f901392231af357fbff5",
+  "amountIn": "6000000",
+  "amountOutNet": "21203360458736215225",
+  "note": {
+   "commitment": "18572378107685383048326593031175139684484573370102610248718479466097632774556",
+   "value": "21203360458736215225"
+  }
+ },
+ "syncBuyOutput": {
+  "gasUsed": "730201",
+  "events": [
+   {
+    "event": "LeafApproved",
+    "commitment": "18572378107685383048326593031175139684484573370102610248718479466097632774556",
+    "leaf": "16205205479150628410830381332022200887544582897927573000987147198325564609546",
+    "index": "0"
+   }
+  ]
+ },
+ "sell": {
+  "tx": "0x4eb5280385a8c68ce60d3c31febd34e0ea92e16609a1db84b1ce218ab62ef755",
+  "gasUsed": "1353009",
+  "from": "0x3a41547735591f0a2d55f901392231af357fbff5",
+  "amountIn": "21203360458736215225",
+  "amountOutNet": "5958127",
+  "note": {
+   "commitment": "5542225344061465688606882265704463301205454219095958231947843992349150360254",
+   "value": "5958127"
+  }
+ },
+ "syncOnDeposit": {
+  "gasUsed": "113844",
+  "events": [
+   {
+    "event": "DepositSeen",
+    "commitment": "7272390952157295169299775888459328069523249613605588535623325525302627656140",
+    "depositor": "0x9331705E392035C30862178C8C96eB1B12345d09",
+    "approvableAt": "1792559989"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "7272390952157295169299775888459328069523249613605588535623325525302627656140",
+    "reason": 3
+   },
+   {
+    "event": "DepositSeen",
+    "commitment": "19395934374793779829491699717172604903405885861542833248572334015574616942987",
+    "depositor": "0xaCe51773827EC0Ac1C863c3ea39bA2216564A444",
+    "approvableAt": "1792559989"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "19395934374793779829491699717172604903405885861542833248572334015574616942987",
+    "reason": 3
+   }
+  ]
+ },
+ "syncBeforeDelay": {
+  "gasUsed": "69772",
+  "events": [
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "7272390952157295169299775888459328069523249613605588535623325525302627656140",
+    "reason": 3
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "19395934374793779829491699717172604903405885861542833248572334015574616942987",
+    "reason": 3
+   }
+  ]
+ },
+ "syncAfterDelay": {
+  "gasUsed": "718177",
+  "events": [
+   {
+    "event": "LeafApproved",
+    "commitment": "7272390952157295169299775888459328069523249613605588535623325525302627656140",
+    "leaf": "2129203839097374003986713017976521726238956250995907725875948005909005166220",
+    "index": "1"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "19395934374793779829491699717172604903405885861542833248572334015574616942987",
+    "reason": 2
+   }
+  ]
+ },
+ "approved": {
+  "clean": true,
+  "dirty": false,
+  "dirtyRagequitStillPossibleTo": "0xaCe51773827EC0Ac1C863c3ea39bA2216564A444"
+ },
+ "summary": {
+  "usdgSpent": "6000000",
+  "ponsBought": "21203360458736215225",
+  "usdgBack": "5958127",
+  "epochs": "3"
+ }
+}

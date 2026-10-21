@@ -4,6 +4,8 @@ Status: draft, 2026-10-20. Nothing here is deployed or reviewed.
 
 **Decision (user, 2026-10-20): option A.** No Lincoln process approves pools or notes, but the guardian Safe keeps an exclusion lever, because a pool nobody can screen invites sanctions. Option B (no association set, no guardian) is rejected. Fork proof: [auto-asp/](auto-asp/README.md).
 
+**Decisions (user, 2026-10-21):** factory pools have no deposit caps (the Safe can still lower them); Uniswap V4 routes are supported; the app lists every pool. Factory, tests and fork run: [factory/](factory/README.md).
+
 ## Goal
 
 Any token holder can open a private pool for a meme token without asking Lincoln. Holders then trade privately inside it: ETH note → meme note (buy) and meme note → ETH note (sell). Each trade is one transaction through a fee adapter, so the DEX sees the trade but not who made it.
@@ -25,7 +27,7 @@ The circuits and verifiers do not need to change. `SCOPE = keccak(DOMAIN, chainI
 ### 1. On-chain: `LincolnPoolFactory` (new, ownerless)
 
 - `createPool(token)` deploys `Phase2ASPPool` with CREATE2 (salt = token), so each token gets exactly one pool and anyone can compute its address. Verifiers, registry and chain ID are fixed. The pool bytecode is unchanged RC.3.
-- The factory sets caps by a rule, not by the caller's choice (see Decisions).
+- Pools are created without deposit caps; the caller cannot set caps (see Decisions).
 - `createRoutes(token, path)` deploys the buy adapter (ETH pool → token pool) and the sell adapter (token pool → ETH pool) through a separate adapter factory, also with CREATE2 on `(source, target, path)`. Treasury = the Safe, service fee = 30 bps. Both are fixed in the factory, not chosen by the caller. The adapter constructor already rejects a path without a V3 pool.
 - It emits `PoolCreated(token, pool, creator)` and `RoutesCreated(token, buyAdapter, sellAdapter, path)`. Everything downstream discovers pools from these events.
 - Size: pool initcode is 13.6 KB and adapter initcode is 17.5 KB, so they need two factories (EIP-170 limit 24 KB).
@@ -57,15 +59,15 @@ What the factory checks: the token has code, `decimals()` and `totalSupply()` re
 ## Privacy and abuse notes
 
 - Buyers come from the ETH pool, which has a large set, so a buy hides who bought. The meme note itself sits in a small set. A quick sell after a buy is easy to link by timing. The app already shows crowd levels and should show them here.
-- A team could deposit its own supply and sell privately. Deposits are public (`originalDepositor`, `DynamicDeposited`), so the token page should show how much of the pool came from which addresses. A total cap as a share of supply also limits this (see Decisions).
+- A team could deposit its own supply and sell privately. Deposits are public (`originalDepositor`, `DynamicDeposited`), so the token page should show how much of the pool came from which addresses. Pools have no caps, so this disclosure is the main safeguard.
 - This is new contract code during an audit that is still in progress. The factories should join the audit scope before mainnet.
 
-## Decisions needed
+## Decisions
 
-1. **Caps.** Proposed: `maxDeposit = 1% of totalSupply`, `maxTotal = 10% of totalSupply`, both fixed at creation. Alternative: no effective cap, guardian lowers caps when needed.
-2. **DEX coverage.** V3 is supported by the existing adapter. Tokens that trade only on V4 need the V4 adapter in the factory too.
-3. **Listing threshold.** Anyone can create a pool. Should the app list every pool, or only those above a liquidity floor, with the rest reachable by link?
-4. **Who deploys the factories.** One deploy by the Lincoln deployer, after review. After that, no further Lincoln transactions are needed per pool.
+1. **Caps:** none at creation (decided 2026-10-21). The Safe can lower them or pause deposits.
+2. **DEX coverage:** V3 through the RC.3 adapter, and V4 through a new single-pool adapter (decided 2026-10-21).
+3. **Listing:** the app lists every pool (decided 2026-10-21).
+4. **Who deploys the factory:** still open. The plan is one rollout by the Lincoln deployer after review; after that, no Lincoln transaction is needed per pool.
 
 ## Order of work
 
