@@ -1,0 +1,7 @@
+out/
+cache/
+out-*/
+cache-*/
+anvil*.log
+result*.json
+!result-20*.json

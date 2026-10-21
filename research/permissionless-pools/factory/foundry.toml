@@ -1,0 +1,26 @@
+# Research build: permissionless meme pool factory, routes and tests. Never deploys to a public chain.
+# RC.3 pool, registry and fee adapter compile unchanged from releases/rc3. Poseidon stays unlinked:
+# tests deploy it, fork scripts link the live mainnet copies.
+[profile.default]
+src = "src"
+out = "out"
+cache_path = "cache"
+libs = ["../../../node_modules"]
+auto_detect_remappings = false
+allow_paths = ["../../../releases/rc3/protocol", "../../../node_modules"]
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 10000
+via_ir = true
+remappings = [
+  "@openzeppelin/contracts/=../../../node_modules/@openzeppelin/contracts/",
+  "poseidon-solidity/=../../../node_modules/poseidon-solidity/",
+  "rc3/=../../../releases/rc3/protocol/phase2-mainnet/contracts/",
+  "rc3-fees/=../../../releases/rc3/protocol/phase2-fees/mainnet/",
+  "rc3-test/=../../../releases/rc3/protocol/phase2-mainnet/fuzz/test/",
+]
+test = "test"
+
+[fuzz]
+runs = 256
