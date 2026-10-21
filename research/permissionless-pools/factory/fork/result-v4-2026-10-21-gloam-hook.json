@@ -1,0 +1,105 @@
+{
+ "v4Pool": {
+  "forkBlock": "94009211",
+  "poolManager": "0x8366a39CC670B4001A1121B8F6A443A643e40951",
+  "key": {
+   "currency0": "0x0000000000000000000000000000000000000000",
+   "currency1": "0xDcD885F5c60b3aD49F6D58718696417314e8724d",
+   "fee": 0,
+   "tickSpacing": 200,
+   "hooks": "0x953391a2DDf7E8437FeB878FDF2C6f325Fbf00CC"
+  },
+  "poolId": "0xc5f373710186d788eee3048f9ff92608d344e3360b2a35bea98068146e18dd1a",
+  "symbol": "GLOAM",
+  "decimals": 18,
+  "sqrtPriceX96": "2402033434735427165869929114573",
+  "liquidity": "1227412847775482389566",
+  "managerMemeBalance": "43872042556180720002890",
+  "managerEthBalance": "24573124368534739586776",
+  "virtualEthReserve": "40484725636786597062"
+ },
+ "opened": {
+  "screening": "0x38fe1e766c98f4c9378d09abb41a130e4e076720",
+  "provider": "0xdd3038b7d2fbb332471bf54cadbacf5bb24b0eda",
+  "registry": "0x5a3cb2b1999Dfb474e8453B250a0C420B7e8b23a",
+  "pool": "0x8f13d770e5c60d187676c0b97268e9f0b4e52985",
+  "poolScope": "6928467416477903238619154631377080830228687528602186399016225399717943037138"
+ },
+ "adapters": {
+  "buy": "0xd0349ab9651d9030fb5cc32a20232bd945c80fd7",
+  "sell": "0x129a9224ffb5d7f407dd950807a896f75eb3f9aa",
+  "treasury": "0xb068a6C39c2E5bbaDb57C98318C63fE98E6cdD03",
+  "deployGas": [
+   "2952203",
+   "2952276"
+  ],
+  "runtimeBytes": 13290,
+  "initcodeBytes": 15503,
+  "buyLimit": "4295128740",
+  "sellLimit": "1461446703485210103287273052203988822378723970341"
+ },
+ "ethNote": {
+  "deposit": "100000000000000000",
+  "maxDeposit": "10000000000000000000",
+  "commitment": "6083809433033267892389739720802107296914314289161626147154165905676185031334",
+  "depositGas": "650074"
+ },
+ "buy": {
+  "tx": "0x1823de6890329383d7b77a1342458b1239ba7d18ee26d119d441f1cd9bc22144",
+  "gasUsed": "1975557",
+  "proveMs": 1409,
+  "processor": "0xa6d2ac35fab39fbbfb319dd82140ab15c77f0bcb",
+  "actionHash": "0x1c65f9e75fa52bd6982ebf09cc7137e4108e23d4437582738c2d99ed62135497",
+  "actionHashMatchesAdapter": true,
+  "strangerReverted": true,
+  "amountIn": "60000000000000000",
+  "quotedGross": "53969195406269293744",
+  "gross": "53969195406269293744",
+  "serviceFee": "161907586218807881",
+  "amountOutNet": "53807287820050485863",
+  "minAmountOut": "53269214941849981004",
+  "maxServiceFee": "163526662080995960",
+  "note": {
+   "commitment": "16900015018634810312431130240036751047639161283524049339595089885877301684080",
+   "value": "53807287820050485863"
+  }
+ },
+ "syncBuyOutput": {
+  "gasUsed": "727469",
+  "approved": true
+ },
+ "sell": {
+  "tx": "0xa13585905e5556988cd140ab3bf4e0abdd92b5fdb3934571710db41746e44522",
+  "gasUsed": "1269480",
+  "proveMs": 1243,
+  "processor": "0xa6d2ac35fab39fbbfb319dd82140ab15c77f0bcb",
+  "actionHash": "0xd6dd7903f8b0a573e49ee44bfff680e82a74002bc298505d10a9c1b6a8dc2a72",
+  "actionHashMatchesAdapter": true,
+  "strangerReverted": true,
+  "amountIn": "53807287820050485863",
+  "quotedGross": "57451377964030352",
+  "gross": "57451377964030352",
+  "serviceFee": "172354133892091",
+  "amountOutNet": "57279023830138261",
+  "minAmountOut": "56706233591836878",
+  "maxServiceFee": "174077675231012",
+  "note": {
+   "commitment": "9817044626470483272651520026615522273719528940386200240838520642060740354147",
+   "value": "57279023830138261"
+  }
+ },
+ "summary": {
+  "ethSpent": "60000000000000000",
+  "memeBought": "53807287820050485863",
+  "ethBack": "57279023830138261",
+  "roundTripCostBps": "453",
+  "treasuryMeme": "161907586218807881",
+  "treasuryEth": "172354133892091",
+  "adapterBalances": {
+   "buyEth": "0",
+   "buyMeme": "0",
+   "sellEth": "0",
+   "sellMeme": "0"
+  }
+ }
+}

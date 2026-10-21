@@ -7,7 +7,9 @@ import {Phase2ASPRegistry} from 'rc3/Phase2ASPRegistry.sol';
 import {Phase2FeeRouteBase} from 'rc3-fees/Phase2FeeRouteAdapter.sol';
 import {ScreeningList} from '../src/ScreeningList.sol';
 import {AutoApproveProvider} from '../src/AutoApproveProvider.sol';
-import {FactoryOnly, PoolDeployer, ProviderDeployer, V3RouteDeployer} from '../src/Deployers.sol';
+import {FactoryOnly, PoolDeployer, ProviderDeployer, V3RouteDeployer, V4RouteDeployer} from '../src/Deployers.sol';
+import {Phase2FeeV4Adapter} from '../src/Phase2FeeV4Adapter.sol';
+import {MockV4PoolManager} from './mocks/V4Mocks.sol';
 import {LincolnMemeFactory, V4PoolKey} from '../src/LincolnMemeFactory.sol';
 
 /// @dev Every V3 pair exists at fee 500 unless switched off; returns its own address as the pool.
@@ -21,14 +23,6 @@ contract MockRouter02 {
     address public immutable factory;
     address public immutable WETH9;
     constructor(address factory_, address weth) { factory = factory_; WETH9 = weth; }
-}
-
-contract MockV4Adapter {}
-
-contract MockV4RouteDeployer is FactoryOnly {
-    function deploy(address, address, V4PoolKey calldata) external onlyFactory returns (address) {
-        return address(new MockV4Adapter());
-    }
 }
 
 /// @dev Has code but no ERC20 surface.
@@ -53,7 +47,8 @@ contract FactoryTest is Base {
     PoolDeployer internal poolDeployer;
     ProviderDeployer internal providerDeployer;
     V3RouteDeployer internal v3Routes;
-    MockV4RouteDeployer internal v4Routes;
+    MockV4PoolManager internal manager;
+    V4RouteDeployer internal v4Routes;
     LincolnMemeFactory internal factory;
 
     function setUp() public {
@@ -71,7 +66,8 @@ contract FactoryTest is Base {
         poolDeployer = new PoolDeployer(address(verifier), address(exitVerifier));
         providerDeployer = new ProviderDeployer(SAFE, address(screening), DELAY);
         v3Routes = new V3RouteDeployer(address(new MockRouter02(address(v3Factory), address(weth))), address(weth), 30, TREASURY);
-        v4Routes = new MockV4RouteDeployer();
+        manager = new MockV4PoolManager();
+        v4Routes = new V4RouteDeployer(address(manager), 30, TREASURY);
         address[] memory bases = new address[](2);
         bases[0] = address(baseEth);
         bases[1] = address(baseUsd);
@@ -279,14 +275,27 @@ contract FactoryTest is Base {
     }
 
     function testV4RoutesAreRecordedAndTrusted() public {
-        (Phase2ASPPool pool,) = open();
+        (Phase2ASPPool pool, AutoApproveProvider provider) = open();
+        // Native ETH sorts first, so ETH is currency0.
         V4PoolKey memory key = V4PoolKey(address(0), address(meme), 10_000, 200, address(0));
-        address adapter = factory.createV4Route(address(baseEth), address(pool), key);
-        check(factory.isRouteAdapter(adapter), 'trusted');
+        manager.initialize(MockV4PoolManager.PoolKey(key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks), 2 ** 96);
+        address buy = factory.createV4Route(address(baseEth), address(pool), key);
+        address sell = factory.createV4Route(address(pool), address(baseEth), key);
+        check(factory.isRouteAdapter(buy) && factory.isRouteAdapter(sell), 'trusted');
+        Phase2FeeV4Adapter adapter = Phase2FeeV4Adapter(payable(buy));
+        check(adapter.ZERO_FOR_ONE() && !Phase2FeeV4Adapter(payable(sell)).ZERO_FOR_ONE(), 'directions');
+        check(address(adapter.POOL_MANAGER()) == address(manager) && adapter.TREASURY() == TREASURY && adapter.FEE_BPS() == 30, 'fixed manager, fee and treasury');
         vm.expectRevert(LincolnMemeFactory.RouteExists.selector);
         factory.createV4Route(address(baseEth), address(pool), key);
-        key.fee = 3000;
+        uint256 c = deposit(pool, buy, 5e18, 51);
+        eq(provider.sync(one(c)), 1, 'V4 adapter deposits are approved at once');
+
+        key.fee = 3000; // not initialized on the manager
+        vm.expectRevert(Phase2FeeV4Adapter.PoolNotInitialized.selector);
         factory.createV4Route(address(baseEth), address(pool), key);
-        eq(factory.routeCount(), 2, 'another key is another route');
+        key.fee = 10_000;
+        key.currency0 = address(usd); // currencies do not match the two pools
+        vm.expectRevert(Phase2FeeV4Adapter.InvalidRoute.selector);
+        factory.createV4Route(address(baseEth), address(pool), key);
     }
 }

@@ -4,6 +4,8 @@ pragma solidity 0.8.28;
 import {Phase2ASPPool} from 'rc3/Phase2ASPPool.sol';
 import {Phase2FeeRouter02Adapter} from 'rc3-fees/Phase2FeeRouteAdapter.sol';
 import {AutoApproveProvider} from './AutoApproveProvider.sol';
+import {Phase2FeeV4Adapter} from './Phase2FeeV4Adapter.sol';
+import {V4PoolKey} from './LincolnMemeFactory.sol';
 
 /// @notice Research only. Holds one creation code for the factory, which would otherwise exceed
 /// the 24 KB contract limit. Only the factory can deploy through it; the factory is set once by
@@ -88,5 +90,25 @@ contract V3RouteDeployer is FactoryOnly {
 
     function deploy(address sourcePool, address targetPool, bytes calldata path) external onlyFactory returns (address) {
         return address(new Phase2FeeRouter02Adapter(sourcePool, targetPool, ROUTER, WRAPPED_NATIVE, 0, path, FEE_BPS, TREASURY));
+    }
+}
+
+/// @notice Deploys a single-pool Uniswap V4 fee adapter with the fixed fee and treasury. The adapter
+/// constructor rejects a key whose currencies do not match the two pools or whose pool is uninitialized.
+contract V4RouteDeployer is FactoryOnly {
+    address public immutable POOL_MANAGER;
+    uint16 public immutable FEE_BPS;
+    address public immutable TREASURY;
+
+    constructor(address poolManager, uint16 feeBps, address treasury) {
+        POOL_MANAGER = poolManager;
+        FEE_BPS = feeBps;
+        TREASURY = treasury;
+    }
+
+    function deploy(address sourcePool, address targetPool, V4PoolKey calldata key) external onlyFactory returns (address) {
+        Phase2FeeV4Adapter.PoolKey memory adapterKey =
+            Phase2FeeV4Adapter.PoolKey(key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks);
+        return address(new Phase2FeeV4Adapter(sourcePool, targetPool, POOL_MANAGER, adapterKey, FEE_BPS, TREASURY));
     }
 }
