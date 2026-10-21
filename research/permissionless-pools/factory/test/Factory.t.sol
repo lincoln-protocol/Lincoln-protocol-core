@@ -168,11 +168,12 @@ contract FactoryTest is Base {
         eq(provider.sync(one(c)), 0, 'still waiting');
         skip(1);
         eq(provider.sync(one(c)), 1, 'approved after the delay');
-        check(provider.approved(c), 'approved');
+        check(provider.approved(c) && provider.usable(c), 'approved and published (the interval has passed)');
         eq(provider.sync(one(c)), 0, 'idempotent');
         (uint256 root, uint64 epoch,) = Phase2ASPRegistry(address(provider.REGISTRY())).latestPolicy();
         eq(root, provider.root(), 'published root');
-        eq(epoch, 2, 'one new epoch per approving sync');
+        eq(epoch, 2, 'one new epoch');
+        eq(provider.publishedLeafCount(), 1, 'policy covers the leaf');
     }
 
     function testDeniedDepositorAndExcludedCommitmentAreWithheld() public {
@@ -210,16 +211,29 @@ contract FactoryTest is Base {
         both[0] = 7001;
         both[1] = 7002;
         eq(provider.sync(both), 2, 'approved without a delay');
+        // bind published a moment ago, so the new leaves wait for the publish interval.
+        check(!provider.usable(7001) && !provider.canPublish(), 'not yet published');
+        skip(provider.MIN_PUBLISH_INTERVAL());
+        check(provider.publish() && provider.usable(7001) && provider.usable(7002), 'published after the interval');
     }
 
-    function testRouteAdapterDepositsAreApprovedAtOnce() public {
+    /// Audit 2026-10-21 F-1: an adapter's output comes from whatever venue its route trades through.
+    function testRouteAdapterDepositsWaitAndCanBeDenied() public {
         (Phase2ASPPool pool, AutoApproveProvider provider) = open();
         address adapter = factory.createV3Route(address(baseUsd), address(pool), usdToMeme());
-        check(factory.isRouteAdapter(adapter), 'trusted');
+        check(factory.isRouteAdapter(adapter), 'recorded');
         uint256 c = deposit(pool, adapter, 5e18, 41);
-        eq(provider.sync(one(c)), 1, 'approved at once');
-        uint256 other = deposit(pool, ALICE, 5e18, 42);
-        eq(provider.sync(one(other)), 0, 'a plain depositor still waits');
+        eq(provider.sync(one(c)), 0, 'an adapter deposit waits like any deposit');
+        skip(DELAY);
+        eq(provider.sync(one(c)), 1, 'approved after the delay');
+        uint256 next = deposit(pool, adapter, 5e18, 42);
+        provider.sync(one(next));
+        address[] memory route = new address[](1);
+        route[0] = adapter;
+        vm.prank(SAFE);
+        screening.setDenied(route, true);
+        skip(DELAY);
+        eq(provider.sync(one(next)), 0, 'the Safe can deny a route adapter');
     }
 
     function testUnknownCommitmentReverts() public {
@@ -242,11 +256,19 @@ contract FactoryTest is Base {
         vm.prank(SAFE);
         pool.pauseDeposits();
         check(pool.depositsPaused(), 'paused');
+        // A spend output is approved but not yet published when the Safe suspends the provider.
+        bytes[2] memory pair = outputs(61);
+        Phase2ASPPool.ExtData memory data = selfData(0, address(0));
+        uint256 context = pool.hashContext(data, pair);
+        pool.transact([uint256(0), 0], [[uint256(0), 0], [uint256(0), 0]], [uint256(0), 0],
+            signals(pool, context, 201, 202, 8001, 0, 0), data, pair);
+        eq(provider.sync(one(8001)), 1, 'approved, publish pending');
         vm.prank(SAFE);
         registry.suspendProvider();
         check(registry.providerSuspended(), 'suspended');
+        skip(provider.MIN_PUBLISH_INTERVAL());
         vm.expectRevert(Phase2ASPRegistry.ProviderIsSuspended.selector);
-        provider.refresh();
+        provider.publish();
     }
 
     // ---------- routes ----------
@@ -288,7 +310,7 @@ contract FactoryTest is Base {
         vm.expectRevert(LincolnMemeFactory.RouteExists.selector);
         factory.createV4Route(address(baseEth), address(pool), key);
         uint256 c = deposit(pool, buy, 5e18, 51);
-        eq(provider.sync(one(c)), 1, 'V4 adapter deposits are approved at once');
+        eq(provider.sync(one(c)), 0, 'V4 adapter deposits wait too');
 
         key.fee = 3000; // not initialized on the manager
         vm.expectRevert(Phase2FeeV4Adapter.PoolNotInitialized.selector);

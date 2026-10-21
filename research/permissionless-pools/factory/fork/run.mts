@@ -127,7 +127,8 @@ async function main() {
   const memeASP = async () => {
     const logs = await pub.getLogs({ address: provider, fromBlock: startBlock, toBlock: 'latest' });
     const leaves = logs.map((l: Log) => { try { return decodeEventLog({ abi: providerArt.abi, topics: l.topics, data: l.data }) as any; } catch { return null; } })
-      .filter((e: any) => e?.eventName === 'LeafApproved').map((e: any) => String(e.args.leaf));
+      .filter((e: any) => e?.eventName === 'LeafApproved').map((e: any) => String(e.args.leaf))
+      .slice(0, Number(await readP('publishedLeafCount'))); // the policy covers only the published prefix
     const [root, epoch, validUntil] = await pub.readContract({ address: registry, abi: REG_ABI, functionName: 'latestPolicy' }) as [bigint, bigint, bigint];
     if (sdk.buildMerkleTree(leaves).root !== root) throw new Error('association root mismatch');
     return { root: String(root), epoch: String(epoch), validUntil: String(validUntil), leaves, expired: false };
@@ -182,10 +183,13 @@ async function main() {
     return received;
   }
 
-  // ---- 4. Buy: 6 USDG note -> PONS note in the new pool. Deposited by a factory route adapter, so approved at once. ----
+  // ---- 4. Buy: 6 USDG note -> PONS note in the new pool. An adapter deposit waits the screening delay like any deposit. ----
   const ponsNote = await feeSwap('buy', { adapter: buy, source: usdgProfile, target: memeProfile, sourceState: { ...(await poolState(USDG_POOL, BigInt(usdgProfile.pool.startBlock))), asp: usdgASP },
     note: usdgNote, amountIn: 6_000_000n, path: path(USDG, PONS) });
-  log('syncBuyOutput', await sync([ponsNote.commitment]));
+  log('syncBuyOutputSeen', await sync([ponsNote.commitment]));
+  await test.increaseTime({ seconds: Number(DELAY) }); await test.mine({ blocks: 1 });
+  log('syncBuyOutputAfterDelay', await sync([ponsNote.commitment]));
+  log('buyOutputUsable', await readP('usable', [ponsNote.commitment]));
 
   // ---- 5. Sell: the whole PONS note -> USDG note in the USDG pool. No Lincoln party approved anything in the PONS pool. ----
   const usdgBack = await feeSwap('sell', { adapter: sell, source: memeProfile, target: usdgProfile, sourceState: { ...(await poolState(pool, startBlock)), asp: await memeASP() },

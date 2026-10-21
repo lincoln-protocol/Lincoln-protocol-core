@@ -33,6 +33,7 @@ interface IV4RouteDeployer {
 
 interface IAssetPool {
     function ASSET() external view returns (address);
+    function nextLeafIndex() external view returns (uint256);
 }
 
 /// @notice Research only. Anyone opens a private pool for any token and adds in-pool trade routes;
@@ -45,6 +46,9 @@ interface IAssetPool {
 contract LincolnMemeFactory {
     uint8 public constant ROUTE_V3 = 0;
     uint8 public constant ROUTE_V4 = 1;
+    /// @dev A token's pool can be reopened as a new generation once its 2^20-leaf tree is this full,
+    /// so filling a tree with dust deposits cannot retire a token for good (audit 2026-10-21, F-3).
+    uint256 public constant REOPEN_AT_LEAVES = (1 << 20) - 16;
 
     IMemePoolDeployer public immutable POOL_DEPLOYER;
     IMemeProviderDeployer public immutable PROVIDER_DEPLOYER;
@@ -53,7 +57,9 @@ contract LincolnMemeFactory {
 
     mapping(address => bool) public isBasePool;
     mapping(address => bool) public isBaseAsset;
+    /// @dev The current generation for a token; older generations keep working for exits and routes.
     mapping(address => address) public poolOf;
+    mapping(address => address[]) private _generations;
     mapping(address => address) public providerOf;
     mapping(address => bool) public isFactoryPool;
     mapping(address => bool) public isRouteAdapter;
@@ -84,6 +90,10 @@ contract LincolnMemeFactory {
         }
     }
 
+    function generationsOf(address token) external view returns (address[] memory) {
+        return _generations[token];
+    }
+
     function poolCount() external view returns (uint256) {
         return pools.length;
     }
@@ -92,10 +102,12 @@ contract LincolnMemeFactory {
         return routes.length;
     }
 
-    /// @notice Open the private pool for `token`. One pool per token; base assets keep their live pools.
+    /// @notice Open the private pool for `token`. One open pool per token, until its tree is nearly full;
+    /// base assets keep their live pools.
     function createPool(address token) external returns (address pool) {
         if (token == address(0) || token.code.length == 0 || isBaseAsset[token]) revert InvalidToken();
-        if (poolOf[token] != address(0)) revert PoolExists();
+        address current = poolOf[token];
+        if (current != address(0) && IAssetPool(current).nextLeafIndex() < REOPEN_AT_LEAVES) revert PoolExists();
         // ERC20 shape only. Exact-transfer is enforced by the pool on every deposit.
         (bool ok, bytes memory data) = token.staticcall(abi.encodeWithSignature('totalSupply()'));
         if (!ok || data.length < 32) revert InvalidToken();
@@ -107,6 +119,7 @@ contract LincolnMemeFactory {
         pool = POOL_DEPLOYER.deploy(registry, token);
         IMemeProvider(provider).bind(pool);
         poolOf[token] = pool;
+        _generations[token].push(pool);
         providerOf[pool] = provider;
         isFactoryPool[pool] = true;
         pools.push(pool);
