@@ -2,6 +2,8 @@
 
 Status: draft, 2026-10-20. Nothing here is deployed or reviewed.
 
+**Decision (user, 2026-10-20): option A.** No Lincoln process approves pools or notes, but the guardian Safe keeps an exclusion lever, because a pool nobody can screen invites sanctions. Option B (no association set, no guardian) is rejected. Fork proof: [auto-asp/](auto-asp/README.md).
+
 ## Goal
 
 Any token holder can open a private pool for a meme token without asking Lincoln. Holders then trade privately inside it: ETH note → meme note (buy) and meme note → ETH note (sell). Each trade is one transaction through a fee adapter, so the DEX sees the trade but not who made it.
@@ -31,11 +33,13 @@ The circuits and verifiers do not need to change. `SCOPE = keccak(DOMAIN, chainI
 
 What the factory checks: the token has code, `decimals()` and `totalSupply()` return values, and no pool exists for it yet. Exact-transfer is enforced by the pool on every deposit, so fee-on-transfer tokens fail at the first deposit. Rebasing tokens cannot be detected on chain; the app warns about them.
 
-### 2. ASP publisher (backend, owned by the backend session)
+### 2. Association set: on-chain auto-approval with exclusion (option A, replaces the publisher for factory pools)
 
-- Read `PoolCreated` from the factory and add each pool to the set automatically, under the existing `all-current-notes` policy.
-- No other policy change. Notes from factory pools are approved under the same rule as notes from the 15 current pools.
-- The publisher becomes more critical: if it stops for 7 days, every pool stops spending. The redundant provider suggested on 2026-10-17 matters more with this change.
+- Each factory pool gets its own registry whose only provider is an `AutoApproveProvider` contract. The factory deploys the provider, registry and pool, and binds them in one transaction.
+- Rules: notes made by spends and by factory route adapters are approved at once. Direct deposits wait a screening delay (1 hour in the fork run) and are then approved, unless the Safe denied the depositor or excluded the commitment.
+- One shared `ScreeningList` holds the Safe's denials. Nothing is frozen: ragequit and holder exit stay open.
+- Anyone can call `sync` (about 0.72M gas per approved note). The relay calls it as part of its jobs, so users never wait on a Lincoln process. The backend publisher is not involved, and its outages no longer stop factory pools.
+- The registry guardian stays the Safe, so it can suspend a provider in an emergency.
 
 ### 3. Relay (backend)
 

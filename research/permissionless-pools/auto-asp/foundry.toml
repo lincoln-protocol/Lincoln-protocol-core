@@ -1,0 +1,24 @@
+# Research build for the fork run only. The RC.3 pool, registry and fee adapter compile unchanged
+# from releases/rc3; Poseidon libraries link to the live Robinhood mainnet copies.
+[profile.default]
+src = "src"
+out = "out"
+cache_path = "cache"
+libs = ["../../../node_modules"]
+auto_detect_remappings = false
+allow_paths = ["../../../releases/rc3/protocol", "../../../node_modules"]
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 10000
+via_ir = true
+remappings = [
+  "@openzeppelin/contracts/=../../../node_modules/@openzeppelin/contracts/",
+  "poseidon-solidity/=../../../node_modules/poseidon-solidity/",
+  "rc3/=../../../releases/rc3/protocol/phase2-mainnet/contracts/",
+  "rc3-fees/=../../../releases/rc3/protocol/phase2-fees/mainnet/",
+]
+libraries = [
+  "../../../node_modules/poseidon-solidity/PoseidonT3.sol:PoseidonT3:0x4781B6D29Dd0CeFEf101049E23f31D2165a553fa",
+  "../../../node_modules/poseidon-solidity/PoseidonT4.sol:PoseidonT4:0x9096D809dc96BCeE1F9c7b64BAd8F79FA6dCF165",
+]

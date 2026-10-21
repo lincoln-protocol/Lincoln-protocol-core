@@ -1,0 +1,117 @@
+{
+ "opened": {
+  "screening": "0xda9c1a3d79e9e1b5da80f5086f22122f9cc2e18f",
+  "provider": "0xffe37bd50ea0861636f40abbe5076652f6ae5e78",
+  "registry": "0xE8137B5FaB19bF4f449E8834883501D2dF349837",
+  "pool": "0x684614c4e5ed849988fbe0299996e1eddee46b43",
+  "registryProvider": "0xFFE37bD50ea0861636f40aBbE5076652F6AE5e78",
+  "registryGuardian": "0x3ED9d822DBF260A33C78F6846D10c9A07F7E833d",
+  "poolScope": "2535298604366279610829616321616439551983950272091844053632149346093929480022"
+ },
+ "adapters": {
+  "buy": "0x9c9d7f79e428f528c9a60f4af07c59c2fff90b90",
+  "sell": "0xc27249140ae48c5049633accf267454d4809bf56"
+ },
+ "buy": {
+  "tx": "0xb4936036a9136188e5ed10f3aeeeef10f6a8893dc7017e15137de67a7a4db3e7",
+  "gasUsed": "2067920",
+  "from": "0x272b76e32d35e1e96d33c00f346ca3a91fad4575",
+  "amountIn": "6000000",
+  "amountOutNet": "21098414757652361687",
+  "note": {
+   "commitment": "8440990731925549646180599453777656865238431367736071046030891283476756766959",
+   "value": "21098414757652361687"
+  }
+ },
+ "syncBuyOutput": {
+  "gasUsed": "727469",
+  "events": [
+   {
+    "event": "LeafApproved",
+    "commitment": "8440990731925549646180599453777656865238431367736071046030891283476756766959",
+    "leaf": "8841486173430647148079735544221123152016860041903965087998130594874655900016",
+    "index": "0"
+   }
+  ]
+ },
+ "sell": {
+  "tx": "0x562e24277e4843d5f1b311c89311a89862a909d3a0a3a43a3716ec471a071ddb",
+  "gasUsed": "1365182",
+  "from": "0x272b76e32d35e1e96d33c00f346ca3a91fad4575",
+  "amountIn": "21098414757652361687",
+  "amountOutNet": "5958127",
+  "note": {
+   "commitment": "20146103099685952441775316960144412280066108399772948927604261491506913314349",
+   "value": "5958127"
+  }
+ },
+ "syncOnDeposit": {
+  "gasUsed": "110880",
+  "events": [
+   {
+    "event": "DepositSeen",
+    "commitment": "18284216944739611879548477154540639364356418560881054794988308832961832758970",
+    "depositor": "0x3A23c02998fd46E4B3aFABDdC380f75b553AA94B",
+    "approvableAt": "1792561946"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "18284216944739611879548477154540639364356418560881054794988308832961832758970",
+    "reason": 3
+   },
+   {
+    "event": "DepositSeen",
+    "commitment": "7310917213529240528680142230464989286392196912625186039207298097724158530116",
+    "depositor": "0xc633ce2df7f19723a4454889ae43dd8272eaE20b",
+    "approvableAt": "1792561946"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "7310917213529240528680142230464989286392196912625186039207298097724158530116",
+    "reason": 3
+   }
+  ]
+ },
+ "syncBeforeDelay": {
+  "gasUsed": "66808",
+  "events": [
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "18284216944739611879548477154540639364356418560881054794988308832961832758970",
+    "reason": 3
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "7310917213529240528680142230464989286392196912625186039207298097724158530116",
+    "reason": 3
+   }
+  ]
+ },
+ "syncAfterDelay": {
+  "gasUsed": "715367",
+  "events": [
+   {
+    "event": "LeafApproved",
+    "commitment": "18284216944739611879548477154540639364356418560881054794988308832961832758970",
+    "leaf": "21684221459455043187039746979355008351300717181335039880485531133224566880794",
+    "index": "1"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "7310917213529240528680142230464989286392196912625186039207298097724158530116",
+    "reason": 2
+   }
+  ]
+ },
+ "approved": {
+  "clean": true,
+  "dirty": false,
+  "dirtyRagequitStillPossibleTo": "0xc633ce2df7f19723a4454889ae43dd8272eaE20b"
+ },
+ "summary": {
+  "usdgSpent": "6000000",
+  "ponsBought": "21098414757652361687",
+  "usdgBack": "5958127",
+  "epochs": "3"
+ }
+}
