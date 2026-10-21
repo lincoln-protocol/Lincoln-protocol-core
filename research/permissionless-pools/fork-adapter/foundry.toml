@@ -1,0 +1,14 @@
+# Builds only the RC.3 fee adapter for the fork script; never deploys anything.
+[profile.default]
+src = "../../../releases/rc3/protocol/phase2-fees/mainnet"
+out = "out"
+cache_path = "cache"
+libs = ["../../../node_modules"]
+auto_detect_remappings = false
+allow_paths = ["../../../releases/rc3/protocol", "../../../node_modules"]
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 10000
+via_ir = true
+remappings = ["@openzeppelin/contracts/=../../../node_modules/@openzeppelin/contracts/"]
