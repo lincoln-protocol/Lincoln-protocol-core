@@ -4,6 +4,8 @@ pragma solidity 0.8.28;
 import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import {EIP712} from '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
+import {ECDSA} from '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
 
 /// @title RelayStakeRegistryV2
 /// @notice Permissionless registry of relay operators backed by a LINCOLN stake, with the stake owned by a
@@ -12,7 +14,10 @@ import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol
 ///      the staker, so a stolen server key could unbond and withdraw the stake. Here each relay has:
 ///        - an `owner`: the wallet that staked (cold; may be a Safe). Only it can add stake, change the endpoint,
 ///          rotate the relayer key, transfer ownership, unbond and withdraw, and withdrawals always pay it;
-///        - a `relayer`: the hot key the relay signs with. It has no powers in this contract.
+///        - a `relayer`: the hot key the relay signs with. It has no powers in this contract beyond consenting, once,
+///          to be listed under a given owner (an EIP-712 `RelayConsent` signature, no gas), so nobody can list or
+///          rotate onto a key they do not control. The owner and the relayer must be different addresses.
+///      Ownership moves in two steps (offer, then accept by the new owner).
 ///      Everything clients and indexers read is keyed by the relayer address, exactly as in V1: `relayInfo`,
 ///      `RelayStatus`, `relayAt`, `activeRelays`.
 ///      Trust boundary: GUARDIAN (the protocol Safe) can suspend an address, which removes a relayer from the
@@ -20,11 +25,12 @@ import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol
 ///      registering or rotating to new relayers. Stake is never confiscated; a suspended relay can still unbond
 ///      and its owner withdraw. Owner suspension does not deactivate that owner's existing relayers: the guardian
 ///      suspends those relayer addresses directly, so `RelayStatus` alone describes the active set.
-contract RelayStakeRegistryV2 is ReentrancyGuard {
+contract RelayStakeRegistryV2 is ReentrancyGuard, EIP712 {
     using SafeERC20 for IERC20;
 
     struct Relay {
         address owner;            // wallet that staked and controls this listing; zero = no record
+        address pendingOwner;     // offered by `transferOwnership`, takes over on `acceptOwnership`
         uint128 stake;            // active stake counted toward MIN_STAKE
         uint128 unbonding;        // amount waiting out UNBONDING_SECONDS
         uint64 unbondAvailableAt; // when `unbonding` can be withdrawn
@@ -39,12 +45,15 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
     uint64 public immutable UNBONDING_SECONDS;
     address public immutable GUARDIAN;
     uint256 public constant MAX_ENDPOINT_BYTES = 200;
+    bytes32 public constant RELAY_CONSENT_TYPEHASH = keccak256('RelayConsent(address relay,address owner,uint256 nonce)');
 
     /// @dev Keyed by relayer address. A record exists exactly while `owner != 0`, which is also while `listed`.
     mapping(address => Relay) private _relays;
     /// @dev Sticky per-address flag for relayers and owners alike; survives exit until `resume`.
     mapping(address => bool) public suspended;
     address[] private _list;
+    /// @dev Per relayer key; each consent signature is good for one listing or rotation.
+    mapping(address => uint256) public nonces;
 
     event RelayRegistered(address indexed relay, address indexed owner, uint128 stake, string endpoint);
     event StakeAdded(address indexed relay, uint128 amount, uint128 stake);
@@ -52,6 +61,7 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
     event UnbondStarted(address indexed relay, uint128 amount, uint128 stake, uint64 availableAt);
     event Withdrawn(address indexed relay, address indexed owner, uint128 amount);
     event RelayerRotated(address indexed previousRelay, address indexed relay, address indexed owner);
+    event OwnershipOffered(address indexed relay, address indexed owner, address indexed pendingOwner);
     event OwnerSet(address indexed relay, address indexed previousOwner, address indexed owner);
     event Suspended(address indexed account, bytes32 indexed reason);
     event Resumed(address indexed account);
@@ -74,8 +84,10 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
     error AlreadySuspended();
     error NotSuspended();
     error RelaySuspended();
+    error InvalidConsent();
+    error OwnerIsRelay();
 
-    constructor(address stakeToken, uint128 minStake, uint64 unbondingSeconds, address guardian) {
+    constructor(address stakeToken, uint128 minStake, uint64 unbondingSeconds, address guardian) EIP712('Lincoln Relay Stake Registry', '2') {
         if (stakeToken == address(0) || guardian == address(0)) revert ZeroAddress();
         if (minStake == 0 || unbondingSeconds == 0 || unbondingSeconds > 90 days) revert InvalidParameters();
         STAKE_TOKEN = IERC20(stakeToken);
@@ -107,6 +119,12 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
     }
 
     function relayOwner(address relay) external view returns (address) { return _relays[relay].owner; }
+    function pendingOwner(address relay) external view returns (address) { return _relays[relay].pendingOwner; }
+
+    /// @notice The EIP-712 digest `relay` signs to consent to being listed (or rotated onto) under `owner`.
+    function consentDigest(address relay, address owner) public view returns (bytes32) {
+        return _hashTypedDataV4(keccak256(abi.encode(RELAY_CONSENT_TYPEHASH, relay, owner, nonces[relay])));
+    }
     function relayCount() external view returns (uint256) { return _list.length; }
     function relayAt(uint256 index) external view returns (address) { return _list[index]; }
 
@@ -121,14 +139,17 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
 
     // ------------------------------------------------------------ owner
 
-    /// @notice List `relay` (the relay's signing key) with a stake paid and owned by the caller.
-    function register(address relay, string calldata endpoint, uint128 amount) external nonReentrant {
+    /// @notice List `relay` (the relay's signing key) with a stake paid and owned by the caller. `consent` is the
+    ///         relay key's signature over `consentDigest(relay, msg.sender)`.
+    function register(address relay, string calldata endpoint, uint128 amount, bytes calldata consent) external nonReentrant {
         if (relay == address(0)) revert ZeroAddress();
+        if (relay == msg.sender) revert OwnerIsRelay();
         Relay storage r = _relays[relay];
         if (r.owner != address(0)) revert AlreadyRegistered();
         if (suspended[relay] || suspended[msg.sender]) revert RelaySuspended();
         if (amount < MIN_STAKE) revert BelowMinimumStake();
         _checkEndpoint(endpoint);
+        _consume(relay, msg.sender, consent);
         r.owner = msg.sender;
         r.stake = amount;
         r.registeredAt = uint64(block.timestamp);
@@ -153,7 +174,7 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
         if (!wasActive && isActive(relay)) emit RelayStatus(relay, true);
     }
 
-    function setEndpoint(address relay, string calldata endpoint) external onlyOwnerOf(relay) {
+    function setEndpoint(address relay, string calldata endpoint) external nonReentrant onlyOwnerOf(relay) {
         _checkEndpoint(endpoint);
         _relays[relay].endpoint = endpoint;
         emit EndpointUpdated(relay, endpoint);
@@ -162,10 +183,12 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
     /// @notice Move the listing, stake and any pending unbond to a new signing key, e.g. after a server compromise.
     /// @dev The new key must have no record and neither key nor the owner may be suspended, so rotation can never
     ///      shed a suspension or merge into another listing.
-    function rotateRelayer(address relay, address newRelay) external onlyOwnerOf(relay) {
+    function rotateRelayer(address relay, address newRelay, bytes calldata consent) external nonReentrant onlyOwnerOf(relay) {
         if (newRelay == address(0)) revert ZeroAddress();
+        if (newRelay == msg.sender) revert OwnerIsRelay();
         if (newRelay == relay || _relays[newRelay].owner != address(0)) revert AlreadyRegistered();
         if (suspended[relay] || suspended[newRelay] || suspended[msg.sender]) revert RelaySuspended();
+        _consume(newRelay, msg.sender, consent);
         bool wasActive = isActive(relay);
         Relay memory moved = _relays[relay];
         _relays[newRelay] = moved;
@@ -176,17 +199,28 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
         if (isActive(newRelay)) emit RelayStatus(newRelay, true);
     }
 
-    /// @notice Hand the listing (stake, pending unbond, withdrawal rights) to another owner, e.g. a Safe.
+    /// @notice Offer the listing (stake, pending unbond, withdrawal rights) to another owner, e.g. a Safe. It takes
+    ///         over only when it calls `acceptOwnership`, so a mistyped address strands nothing. Zero cancels an offer.
     /// @dev A suspended owner cannot hand over, so a transfer can never shed an owner suspension.
-    function setOwner(address relay, address newOwner) external onlyOwnerOf(relay) {
-        if (newOwner == address(0)) revert ZeroAddress();
+    function transferOwnership(address relay, address newOwner) external nonReentrant onlyOwnerOf(relay) {
+        if (newOwner == relay) revert OwnerIsRelay();
         if (suspended[newOwner] || suspended[msg.sender]) revert RelaySuspended();
-        emit OwnerSet(relay, msg.sender, newOwner);
-        _relays[relay].owner = newOwner;
+        _relays[relay].pendingOwner = newOwner;
+        emit OwnershipOffered(relay, msg.sender, newOwner);
+    }
+
+    function acceptOwnership(address relay) external nonReentrant {
+        Relay storage r = _relays[relay];
+        if (!r.listed) revert NotRelay();
+        if (msg.sender != r.pendingOwner || msg.sender == address(0)) revert NotOwner();
+        if (suspended[msg.sender] || suspended[r.owner]) revert RelaySuspended();
+        emit OwnerSet(relay, r.owner, msg.sender);
+        r.owner = msg.sender;
+        r.pendingOwner = address(0);
     }
 
     /// @notice Move `amount` of active stake into the unbonding queue. One pending unbond at a time.
-    function beginUnbond(address relay, uint128 amount) external onlyOwnerOf(relay) {
+    function beginUnbond(address relay, uint128 amount) external nonReentrant onlyOwnerOf(relay) {
         Relay storage r = _relays[relay];
         if (r.unbonding != 0) revert UnbondPending();
         if (amount == 0 || amount > r.stake) revert InvalidAmount();
@@ -218,7 +252,7 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
 
     /// @notice Suspend a relayer (it leaves the active set) or an owner (it cannot register or rotate to new
     ///         relayers). Sticky per address; stake is never touched.
-    function suspend(address account, bytes32 reason) external {
+    function suspend(address account, bytes32 reason) external nonReentrant {
         if (msg.sender != GUARDIAN) revert NotGuardian();
         if (account == address(0)) revert ZeroAddress();
         if (suspended[account]) revert AlreadySuspended();
@@ -228,7 +262,7 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
         if (wasActive) emit RelayStatus(account, false);
     }
 
-    function resume(address account) external {
+    function resume(address account) external nonReentrant {
         if (msg.sender != GUARDIAN) revert NotGuardian();
         if (!suspended[account]) revert NotSuspended();
         suspended[account] = false;
@@ -237,6 +271,12 @@ contract RelayStakeRegistryV2 is ReentrancyGuard {
     }
 
     // ------------------------------------------------------------ internal
+
+    function _consume(address relay, address owner, bytes calldata consent) private {
+        (address signer, ECDSA.RecoverError err,) = ECDSA.tryRecover(consentDigest(relay, owner), consent);
+        if (err != ECDSA.RecoverError.NoError || signer != relay) revert InvalidConsent();
+        nonces[relay]++;
+    }
 
     function _checkEndpoint(string calldata endpoint) private pure {
         bytes calldata b = bytes(endpoint);
