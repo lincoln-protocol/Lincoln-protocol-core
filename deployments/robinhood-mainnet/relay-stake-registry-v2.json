@@ -1,0 +1,44 @@
+{
+  "schema": "lincoln-relay-stake-registry-deployment/v1",
+  "chainId": 4663,
+  "contract": "RelayStakeRegistryV2",
+  "address": "0xff986c58e467de9862bf97a1c2782d4b263c8307",
+  "startBlock": "95221645",
+  "transactionHash": "0x882d2aa8412417a7e34809107b744dcd9b20e7fa35090cb3d76bfc80f116cd91",
+  "deployer": "0x555998Ba2B2723C97d91FB20Da0ddb896749797e",
+  "gasUsed": "2736693",
+  "constructor": {
+    "stakeToken": "0x2796cdF7328916e0A6c04C296A72C5C6d70B3AEE",
+    "minStake": "5000000000000000000000000",
+    "unbondingSeconds": 1209600,
+    "guardian": "0x9CF17a6E3c75D200f58283A165C442a8A3994555"
+  },
+  "initcodeKeccak256": "0xbb920505c49550d6dd505d8717cef9255e64cfd50e92cafed80108c25ce8180a",
+  "source": {
+    "path": "relay-staking/src/RelayStakeRegistryV2.sol",
+    "sha256": "c0886bb1c4ebfd76f948a87bb060e36c54b7b80f47cf985539d9d10314b8d8fa"
+  },
+  "compiler": {
+    "solc": "0.8.28",
+    "viaIR": true,
+    "optimizerRuns": 10000,
+    "evmVersion": "cancun"
+  },
+  "supersedes": {
+    "contract": "RelayStakeRegistry",
+    "address": "0x1429f7BAA41baee9d6C7989DBdDc4C6344c8204B",
+    "reason": "V1 made the relay signing key the staker"
+  },
+  "verification": {
+    "onchain": {
+      "STAKE_TOKEN": "0x2796cdF7328916e0A6c04C296A72C5C6d70B3AEE",
+      "MIN_STAKE": "5000000000000000000000000",
+      "UNBONDING_SECONDS": "1209600",
+      "GUARDIAN": "0x9CF17a6E3c75D200f58283A165C442a8A3994555",
+      "relayCount": "0"
+    },
+    "runtimeMatchesBuild": true,
+    "parametersMatch": true
+  },
+  "recordedAt": "2026-10-22T15:39:30.021Z"
+}
