@@ -26,9 +26,9 @@ The circuits and verifiers do not need to change. `SCOPE = keccak(DOMAIN, chainI
 
 ### 1. On-chain: `LincolnPoolFactory` (new, ownerless)
 
-- `createPool(token)` deploys `Phase2ASPPool` with CREATE2 (salt = token), so each token gets exactly one pool and anyone can compute its address. Verifiers, registry and chain ID are fixed. The pool bytecode is unchanged RC.3.
+- `createPool(token)` deploys `Phase2ASPPool` (plain CREATE through a deployer contract) and records it as the token's pool; a token gets a new generation only once its pool's tree is nearly full. Verifiers, registry and chain ID are fixed. The pool bytecode is unchanged RC.3.
 - Pools are created without deposit caps; the caller cannot set caps (see Decisions).
-- `createRoutes(token, path)` deploys the buy adapter (ETH pool → token pool) and the sell adapter (token pool → ETH pool) through a separate adapter factory, also with CREATE2 on `(source, target, path)`. Treasury = the Safe, service fee = 30 bps. Both are fixed in the factory, not chosen by the caller. The adapter constructor already rejects a path without a V3 pool.
+- `createRoutes(token, path)` deploys the buy adapter (ETH pool → token pool) and the sell adapter (token pool → ETH pool) through a separate deployer contract, one adapter per `(source, target, path or key)`. Treasury = the Safe, service fee = 30 bps. Both are fixed in the factory, not chosen by the caller. The adapter constructor already rejects a path without a V3 pool.
 - It emits `PoolCreated(token, pool, creator)` and `RoutesCreated(token, buyAdapter, sellAdapter, path)`. Everything downstream discovers pools from these events.
 - Size: pool initcode is 13.6 KB and adapter initcode is 17.5 KB, so they need two factories (EIP-170 limit 24 KB).
 - The guardian keeps its existing powers on every factory pool: lower caps, pause deposits, raise caps after 12 hours. That is an emergency brake, not an approval step. Holder exits always work.
@@ -38,9 +38,9 @@ What the factory checks: the token has code, `decimals()` and `totalSupply()` re
 ### 2. Association set: on-chain auto-approval with exclusion (option A, replaces the publisher for factory pools)
 
 - Each factory pool gets its own registry whose only provider is an `AutoApproveProvider` contract. The factory deploys the provider, registry and pool, and binds them in one transaction.
-- Rules: notes made by spends and by factory route adapters are approved at once. Direct deposits wait a screening delay (1 hour in the fork run) and are then approved, unless the Safe denied the depositor or excluded the commitment.
+- Rules: notes made by spends are approved at once. Every deposit, including a route adapter's, waits a screening delay (1 hour in the fork run, at least 10 minutes) and is then approved, unless the Safe denied the depositor or excluded the commitment. Approved leaves are published at most every 4 minutes. See the audit section of [factory/README.md](factory/README.md).
 - One shared `ScreeningList` holds the Safe's denials. Nothing is frozen: ragequit and holder exit stay open.
-- Anyone can call `sync` (about 0.72M gas per approved note). The relay calls it as part of its jobs, so users never wait on a Lincoln process. The backend publisher is not involved, and its outages no longer stop factory pools.
+- Anyone can call `sync` (about 0.72-0.76M gas per approved note, measured on the fork; the backend measured 1.23M for a pool's first approval). The relay calls it as part of its jobs, so users never wait on a Lincoln process. The backend publisher is not involved, and its outages no longer stop factory pools.
 - The registry guardian stays the Safe, so it can suspend a provider in an emergency.
 
 ### 3. Relay (backend)

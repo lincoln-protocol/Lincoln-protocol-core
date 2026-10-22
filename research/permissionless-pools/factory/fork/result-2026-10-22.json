@@ -1,0 +1,152 @@
+{
+ "opened": {
+  "factory": "0x52ef0156e3b67db6570a61033308f877d903dd7c",
+  "pool": "0x50a6aB6780d56358C17966361f71F60f01f7662D",
+  "provider": "0x4b5143c07e1d6f93c86a6Ca674ab68f7F35Ae176",
+  "registry": "0x75074Ec53bFb8Ba676592041BF2c59c349A60F56",
+  "creator": "0x85A47ffbdFFa90fb2a54C4FE4aEc2B5e8fdBf3F1",
+  "createPoolGas": "7798915",
+  "buy": "0x1F85e322c5F526DF4B7E5940a2430E288E28f880",
+  "sell": "0x91949cDCD93F2f9655E8C7753D7c0a2f21cD088F",
+  "routeGas": [
+   "3196102",
+   "3178822"
+  ],
+  "maxDeposit": "340282366920938463463374607431768211455",
+  "registryProvider": "0x4b5143c07e1d6f93c86a6Ca674ab68f7F35Ae176",
+  "registryGuardian": "0x9CF17a6E3c75D200f58283A165C442a8A3994555",
+  "buyTrusted": true,
+  "poolCount": "1"
+ },
+ "buy": {
+  "tx": "0x3c133e5e68f56c8e05e3da4b3bc928caefd2dc9455854e4a9277475fb7ac145d",
+  "gasUsed": "2057499",
+  "from": "0xe6bc6d4830c7f20c4d7dd74934a0f438ae66c4b5",
+  "amountIn": "6000000",
+  "amountOutNet": "20735171868179358140",
+  "note": {
+   "commitment": "14966597554341939425166331119184053135826116868491482230239153921510025560326",
+   "value": "20735171868179358140"
+  }
+ },
+ "syncBuyOutputSeen": {
+  "gasUsed": "69401",
+  "events": [
+   {
+    "event": "DepositSeen",
+    "commitment": "14966597554341939425166331119184053135826116868491482230239153921510025560326",
+    "depositor": "0x1F85e322c5F526DF4B7E5940a2430E288E28f880",
+    "approvableAt": "1792633338"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "14966597554341939425166331119184053135826116868491482230239153921510025560326",
+    "reason": 3
+   }
+  ]
+ },
+ "syncBuyOutputAfterDelay": {
+  "gasUsed": "759262",
+  "events": [
+   {
+    "event": "LeafApproved",
+    "commitment": "14966597554341939425166331119184053135826116868491482230239153921510025560326",
+    "leaf": "5673129775257249790023582802892262359039295640784499759011364811879934075199",
+    "index": "0"
+   },
+   {
+    "event": "PolicyPublished",
+    "root": "11755602274079274411150913158109143680491826545683437154698531642497322785356",
+    "leafCount": "1",
+    "validUntil": "1795225338"
+   }
+  ]
+ },
+ "buyOutputUsable": true,
+ "sell": {
+  "tx": "0x9fadbd9bdf83c4abafe68658f951dfa3cb157c5e341deb02850f493c5e08399a",
+  "gasUsed": "1358284",
+  "from": "0xe6bc6d4830c7f20c4d7dd74934a0f438ae66c4b5",
+  "amountIn": "20735171868179358140",
+  "amountOutNet": "5958127",
+  "note": {
+   "commitment": "17843176564607228156643316211581740770404886544472131908293402750921361895393",
+   "value": "5958127"
+  }
+ },
+ "syncOnDeposit": {
+  "gasUsed": "107436",
+  "events": [
+   {
+    "event": "DepositSeen",
+    "commitment": "6364578596571881556109545998701915477274039970443749449937428819995065295844",
+    "depositor": "0xa67Fa1406d16C303fcb27c86180a57932553788E",
+    "approvableAt": "1792636948"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "6364578596571881556109545998701915477274039970443749449937428819995065295844",
+    "reason": 3
+   },
+   {
+    "event": "DepositSeen",
+    "commitment": "3004197126117203658520510496462705148767166632640892660731455525778478816078",
+    "depositor": "0xf759756026F473c42387305665097cAa94fFd0FE",
+    "approvableAt": "1792636948"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "3004197126117203658520510496462705148767166632640892660731455525778478816078",
+    "reason": 3
+   }
+  ]
+ },
+ "syncBeforeDelay": {
+  "gasUsed": "63364",
+  "events": [
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "6364578596571881556109545998701915477274039970443749449937428819995065295844",
+    "reason": 3
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "3004197126117203658520510496462705148767166632640892660731455525778478816078",
+    "reason": 3
+   }
+  ]
+ },
+ "syncAfterDelay": {
+  "gasUsed": "721837",
+  "events": [
+   {
+    "event": "LeafApproved",
+    "commitment": "6364578596571881556109545998701915477274039970443749449937428819995065295844",
+    "leaf": "6517492443111304663299755578187510269955989004693378094957823573793006037067",
+    "index": "1"
+   },
+   {
+    "event": "ApprovalWithheld",
+    "commitment": "3004197126117203658520510496462705148767166632640892660731455525778478816078",
+    "reason": 2
+   },
+   {
+    "event": "PolicyPublished",
+    "root": "18815929182137511356904589789094697594340610771557051110269297834561321544511",
+    "leafCount": "2",
+    "validUntil": "1795228953"
+   }
+  ]
+ },
+ "approved": {
+  "clean": true,
+  "dirty": false,
+  "dirtyRagequitStillPossibleTo": "0xf759756026F473c42387305665097cAa94fFd0FE"
+ },
+ "summary": {
+  "usdgSpent": "6000000",
+  "ponsBought": "20735171868179358140",
+  "usdgBack": "5958127",
+  "epochs": "3"
+ }
+}
