@@ -45,7 +45,9 @@ The power-15 transcript is available from the [public source](https://storage.go
 
 Each final zkey contains two non-beacon records followed by a beacon. Recorded labels `lincoln-local-20261016` and `leo-independent-20261016` are transcript labels, not authenticated identities or a count of independently controlled machines. Parent keys and public beacon records are retained in `zk/ceremony/`.
 
-The public [beacon commitment at an immutable revision](https://raw.githubusercontent.com/LincolnProtocol-com/beacon/1229e4e1a0259bce86fa6b5c4edc030b3069eea5/artifacts/phase2-ceremony/beacon-commitment.json) records the precommitment. The final beacon hash is `0x5b9e2e64568bf74f5892c0d26211590d3159ddcca3b6c3a922abbc940ed48ed1`, with SnarkJS iteration exponent **20**. Observations record Ethereum mainnet and two RPC hosts; they are not a consensus light-client proof or an independent timestamp attestation.
+The public [beacon commitment at an immutable revision](https://raw.githubusercontent.com/lincoln-protocol/beacon/1229e4e1a0259bce86fa6b5c4edc030b3069eea5/artifacts/phase2-ceremony/beacon-commitment.json) records the precommitment. The final beacon hash is `0x5b9e2e64568bf74f5892c0d26211590d3159ddcca3b6c3a922abbc940ed48ed1`, with SnarkJS iteration exponent **20**. Observations record Ethereum mainnet and two RPC hosts; they are not a consensus light-client proof or an independent timestamp attestation.
+
+The beacon repository moved from `LincolnProtocol-com/beacon` to `lincoln-protocol/beacon` on 2026-10-22 with its full history, so the commit and the file bytes are identical. Records under `releases/`, `audit/` and `zk/ceremony/` keep the original URL as published.
 
 | Circuit | Final zkey SHA256 | Final manifest SHA256 |
 | --- | --- | --- |

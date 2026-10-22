@@ -7,7 +7,7 @@
   "license": "BUSL-1.1",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/LincolnProtocol-com/Lincoln-protocol-core.git"
+    "url": "git+https://github.com/lincoln-protocol/Lincoln-protocol-core.git"
   },
   "engines": {
     "node": ">=22"
