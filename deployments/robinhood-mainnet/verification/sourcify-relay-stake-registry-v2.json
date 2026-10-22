@@ -1,0 +1,10 @@
+[
+ {
+  "name": "RelayStakeRegistryV2",
+  "address": "0xfF986c58e467De9862BF97a1c2782D4b263C8307",
+  "contract": "RelayStakeRegistryV2",
+  "result": "exact_match",
+  "creation": "exact_match",
+  "runtime": "exact_match"
+ }
+]
