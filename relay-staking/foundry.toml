@@ -1,0 +1,19 @@
+# RelayStakeRegistry: source copied verbatim from the backend repo
+# (protocol/phase2-relay-staking/contracts/RelayStakeRegistry.sol, sha256 in DEPLOYMENT.md).
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+cache_path = "cache"
+libs = ["../node_modules"]
+auto_detect_remappings = false
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 10000
+via_ir = true
+remappings = ["@openzeppelin/contracts/=../node_modules/@openzeppelin/contracts/"]
+
+[fuzz]
+runs = 512

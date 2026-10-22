@@ -1,0 +1,386 @@
+{
+ "schema": "lincoln-source-verification/v1",
+ "chainId": 4663,
+ "service": "Sourcify (sourcify.dev), forwarded to robin.etherscan.io",
+ "verifiedAt": "2026-10-22",
+ "compiler": "v0.8.28+commit.7893614a",
+ "note": "Every contract rebuilt byte for byte from the release sources (standard JSON input), creation and runtime exact_match. Blockscout API verification was unavailable (Cloudflare 403 / 500 / 429).",
+ "contracts": [
+  {
+   "name": "hedgefun-lincoln-to-spcx",
+   "contract": "Phase2FeeHedgeFunV4Adapter",
+   "address": "0x0955e00c2F12Ef6450c60Db719D936AdCEFb3091",
+   "standardInput": "HedgeFunV4Adapter.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x0955e00c2F12Ef6450c60Db719D936AdCEFb3091"
+  },
+  {
+   "name": "uniswap-usdg-to-qqq",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x10B002942c1dcf6E93951dC85b9A41D3dA30B690",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x10B002942c1dcf6E93951dC85b9A41D3dA30B690"
+  },
+  {
+   "name": "uniswap-aapl-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x1294FF276c7cE8DA5a3Be8635BFB422931d152e9",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x1294FF276c7cE8DA5a3Be8635BFB422931d152e9"
+  },
+  {
+   "name": "pool-mstr",
+   "contract": "Phase2ASPPool",
+   "address": "0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88"
+  },
+  {
+   "name": "uniswap-qqq-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x23C932B0B8C879D0D982353411D8e6Ba3Bac3aaa",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x23C932B0B8C879D0D982353411D8e6Ba3Bac3aaa"
+  },
+  {
+   "name": "uniswap-eth-to-pons",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x2dD4643AF77b2E223208ca82337c696F7f31f4F3",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x2dD4643AF77b2E223208ca82337c696F7f31f4F3"
+  },
+  {
+   "name": "pool-googl",
+   "contract": "Phase2ASPPool",
+   "address": "0x31Bd720527D9875b444c0946c5795351a56d9d8B",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x31Bd720527D9875b444c0946c5795351a56d9d8B"
+  },
+  {
+   "name": "uniswap-usdg-to-nvda",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x39c340f193C2f6D4131A9537f005Da3385d0e0fB",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x39c340f193C2f6D4131A9537f005Da3385d0e0fB"
+  },
+  {
+   "name": "uniswap-tsla-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x3DaE2c98EB758685325417fc615e8980263970B3",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x3DaE2c98EB758685325417fc615e8980263970B3"
+  },
+  {
+   "name": "PoseidonT3",
+   "contract": "PoseidonT3",
+   "address": "0x4781B6D29Dd0CeFEf101049E23f31D2165a553fa",
+   "standardInput": "PoseidonT3.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x4781B6D29Dd0CeFEf101049E23f31D2165a553fa"
+  },
+  {
+   "name": "pool-usde",
+   "contract": "Phase2ASPPool",
+   "address": "0x4AC6D3EB4379Bd82f1dcD5C8A61c6b8F15b7812C",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x4AC6D3EB4379Bd82f1dcD5C8A61c6b8F15b7812C"
+  },
+  {
+   "name": "pool-nvda",
+   "contract": "Phase2ASPPool",
+   "address": "0x4C8BAEb78b032EA3610E0F5D4C8B5Bb4fF5995f7",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x4C8BAEb78b032EA3610E0F5D4C8B5Bb4fF5995f7"
+  },
+  {
+   "name": "uniswap-eth-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x51BdAdcDC1B8B6Ed0EDe948EE4Ba1b1F48D22106",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x51BdAdcDC1B8B6Ed0EDe948EE4Ba1b1F48D22106"
+  },
+  {
+   "name": "hedgefun-spcx-to-lincoln",
+   "contract": "Phase2FeeHedgeFunV4Adapter",
+   "address": "0x56B7295fD98Dd47A94870AbD7E508499C0CD13a8",
+   "standardInput": "HedgeFunV4Adapter.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x56B7295fD98Dd47A94870AbD7E508499C0CD13a8"
+  },
+  {
+   "name": "pool-usdg",
+   "contract": "Phase2ASPPool",
+   "address": "0x5Cd4c081eb747406DAb66e22004324600f1928C9",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x5Cd4c081eb747406DAb66e22004324600f1928C9"
+  },
+  {
+   "name": "pool-pons",
+   "contract": "Phase2ASPPool",
+   "address": "0x757335BD24807EAc290521Ee6b3Ab2CB86fd9F18",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x757335BD24807EAc290521Ee6b3Ab2CB86fd9F18"
+  },
+  {
+   "name": "uniswap-mstr-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x784a20CAC13Bedcc885AEb0c3B052644582Df2F1",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x784a20CAC13Bedcc885AEb0c3B052644582Df2F1"
+  },
+  {
+   "name": "uniswap-usdg-to-meta",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x7a8454953CC392b5Ce2E267Dc0570D4D1bC65490",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x7a8454953CC392b5Ce2E267Dc0570D4D1bC65490"
+  },
+  {
+   "name": "uniswap-usdg-to-spy",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x804a2f51a04c4c552FB03743409BCbA0C6485D92",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x804a2f51a04c4c552FB03743409BCbA0C6485D92"
+  },
+  {
+   "name": "uniswap-nvda-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0x829eC924A39A110B0Ea59fcDD1164a2EE6d25f42",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x829eC924A39A110B0Ea59fcDD1164a2EE6d25f42"
+  },
+  {
+   "name": "AssociationSetRegistry",
+   "contract": "Phase2ASPRegistry",
+   "address": "0x89ad7Cce6c161A21323BE234d9924fEe915b2660",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x89ad7Cce6c161A21323BE234d9924fEe915b2660"
+  },
+  {
+   "name": "pool-spy",
+   "contract": "Phase2ASPPool",
+   "address": "0x8a29Db84A20B0A3CA528FAE0F69F50FfD39c6C39",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x8a29Db84A20B0A3CA528FAE0F69F50FfD39c6C39"
+  },
+  {
+   "name": "PoseidonT4",
+   "contract": "PoseidonT4",
+   "address": "0x9096D809dc96BCeE1F9c7b64BAd8F79FA6dCF165",
+   "standardInput": "PoseidonT4.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x9096D809dc96BCeE1F9c7b64BAd8F79FA6dCF165"
+  },
+  {
+   "name": "pool-meta",
+   "contract": "Phase2ASPPool",
+   "address": "0xA2078e02A631ae9218DBAa84987a24741bD24d10",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xA2078e02A631ae9218DBAa84987a24741bD24d10"
+  },
+  {
+   "name": "JoinSplitVerifier",
+   "contract": "Phase2ASPJoinSplitVerifier",
+   "address": "0xA5bC542708D7fEBD706E7fD78caD2ACa785B9dF4",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xA5bC542708D7fEBD706E7fD78caD2ACa785B9dF4"
+  },
+  {
+   "name": "uniswap-meta-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xA755940ca05Da17580982767607E42C801b7a897",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xA755940ca05Da17580982767607E42C801b7a897"
+  },
+  {
+   "name": "pool-aapl",
+   "contract": "Phase2ASPPool",
+   "address": "0xC2991be873dD0EC1D93a0911dC1068bcCcf4D3B4",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xC2991be873dD0EC1D93a0911dC1068bcCcf4D3B4"
+  },
+  {
+   "name": "uniswap-spy-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xDcD5b12c1dC1FfdC58045Fe306305Da705af00d9",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xDcD5b12c1dC1FfdC58045Fe306305Da705af00d9"
+  },
+  {
+   "name": "pool-tsla",
+   "contract": "Phase2ASPPool",
+   "address": "0xE8c619705B7452c2281cA8fA675a355846D34BFE",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xE8c619705B7452c2281cA8fA675a355846D34BFE"
+  },
+  {
+   "name": "HolderExitVerifier",
+   "contract": "Phase2ASPExitVerifier",
+   "address": "0xF430E5d1aa6d970de10C745DC04cb7e7E1F53Ab5",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xF430E5d1aa6d970de10C745DC04cb7e7E1F53Ab5"
+  },
+  {
+   "name": "up-usdg-to-eth",
+   "contract": "Phase2FeeRouteAdapter",
+   "address": "0xF6d233367c3Adfa45047571BAAfBB1b3864c8eA8",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xF6d233367c3Adfa45047571BAAfBB1b3864c8eA8"
+  },
+  {
+   "name": "pool-eth",
+   "contract": "Phase2ASPPool",
+   "address": "0xF9c767CAb9B9A7dE8Dd959967269787880267ab2",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xF9c767CAb9B9A7dE8Dd959967269787880267ab2"
+  },
+  {
+   "name": "uniswap-usdg-to-googl",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xa3eF05228fC562a7610B3d038B990f53de582862",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xa3eF05228fC562a7610B3d038B990f53de582862"
+  },
+  {
+   "name": "uniswap-googl-to-usdg",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xaC082BB3e0C4A6852516f25DBe0d85aB546F834A",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xaC082BB3e0C4A6852516f25DBe0d85aB546F834A"
+  },
+  {
+   "name": "uniswap-eth-to-cashcat",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xaE8daE90Db5601b786B6ED883D65600397cBC537",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xaE8daE90Db5601b786B6ED883D65600397cBC537"
+  },
+  {
+   "name": "uniswap-usdg-to-mstr",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xb7e36f25FfDaFAbcB28DdE863C97C8ad7dC57bc2",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xb7e36f25FfDaFAbcB28DdE863C97C8ad7dC57bc2"
+  },
+  {
+   "name": "uniswap-usdg-to-tsla",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xbF542B7195Eb402671aA30cED94114e0557ac1d5",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xbF542B7195Eb402671aA30cED94114e0557ac1d5"
+  },
+  {
+   "name": "pool-qqq",
+   "contract": "Phase2ASPPool",
+   "address": "0xd4375275F5FA231e238c9FF1237A8e8666Be6B62",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xd4375275F5FA231e238c9FF1237A8e8666Be6B62"
+  },
+  {
+   "name": "uniswap-pons-to-eth",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xdCC6FB0Be9dE8c2BeeB549d0187bdA920B3705f5",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xdCC6FB0Be9dE8c2BeeB549d0187bdA920B3705f5"
+  },
+  {
+   "name": "uniswap-cashcat-to-eth",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xe3A67af6FA192E06d7Cd528D2f0EBAE171653DC2",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xe3A67af6FA192E06d7Cd528D2f0EBAE171653DC2"
+  },
+  {
+   "name": "pool-cashcat",
+   "contract": "Phase2ASPPool",
+   "address": "0xe6711cbb2E44A0Ce72d301cC27EfBC244cBD75fb",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xe6711cbb2E44A0Ce72d301cC27EfBC244cBD75fb"
+  },
+  {
+   "name": "uniswap-usdg-to-aapl",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xe8A5208e21B9c3Ca9d0DDD3374f27A092FE91547",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xe8A5208e21B9c3Ca9d0DDD3374f27A092FE91547"
+  },
+  {
+   "name": "uniswap-usdg-to-eth",
+   "contract": "Phase2FeeRouter02Adapter",
+   "address": "0xf4E0376E185177EbF38773fEA3F46089733cB029",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xf4E0376E185177EbF38773fEA3F46089733cB029"
+  },
+  {
+   "name": "up-eth-to-usdg",
+   "contract": "Phase2FeeRouteAdapter",
+   "address": "0xf75881f178D15fF44cC4B00dAdcEbCD5e04a9296",
+   "standardInput": "rc3-fee-adapters.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xf75881f178D15fF44cC4B00dAdcEbCD5e04a9296"
+  },
+  {
+   "name": "RelayStakeRegistry",
+   "contract": "RelayStakeRegistry",
+   "address": "0x1429f7BAA41baee9d6C7989DBdDc4C6344c8204B",
+   "standardInput": "RelayStakeRegistry.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x1429f7BAA41baee9d6C7989DBdDc4C6344c8204B"
+  },
+  {
+   "name": "pool-lincoln (SPCX profile)",
+   "contract": "Phase2ASPPool",
+   "address": "0x8f75638C296E9334B509495a53F8BD7e4E6eBDCc",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0x8f75638C296E9334B509495a53F8BD7e4E6eBDCc"
+  },
+  {
+   "name": "pool-spcx",
+   "contract": "Phase2ASPPool",
+   "address": "0xd5Fc86f3251cE49F0Bd7B94b28B0334f21F6E42b",
+   "standardInput": "rc3-core.standard-input.json",
+   "match": "exact_match",
+   "lookup": "https://repo.sourcify.dev/4663/0xd5Fc86f3251cE49F0Bd7B94b28B0334f21F6E42b"
+  }
+ ]
+}

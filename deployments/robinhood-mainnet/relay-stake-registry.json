@@ -1,0 +1,51 @@
+{
+  "schema": "lincoln-relay-stake-registry-deployment/v1",
+  "chainId": 4663,
+  "contract": "RelayStakeRegistry",
+  "address": "0x1429f7baa41baee9d6c7989dbddc4c6344c8204b",
+  "startBlock": "94808942",
+  "transactionHash": "0x032c95c5c46a5e7f75407c7676ba31ef707956236b2de6618cb7f0ddaa0c8923",
+  "deployer": "0x555998Ba2B2723C97d91FB20Da0ddb896749797e",
+  "gasUsed": "1890105",
+  "constructor": {
+    "stakeToken": "0x2796cdF7328916e0A6c04C296A72C5C6d70B3AEE",
+    "minStake": "5000000000000000000000000",
+    "unbondingSeconds": 1209600,
+    "guardian": "0x9CF17a6E3c75D200f58283A165C442a8A3994555",
+    "minStakeTokens": "5000000",
+    "unbondingDays": 14
+  },
+  "initcodeKeccak256": "0x1eff9ad0f5bc312fe6666638be245774e32853ca6aaf21746173d0199e949bf7",
+  "source": {
+    "repository": "LincolnProtocol backend",
+    "path": "protocol/phase2-relay-staking/contracts/RelayStakeRegistry.sol",
+    "sha256": "f99b8d7c5cb840250399b9e983e40b06433e7066611c9129fbe9c072e5de3ccc"
+  },
+  "compiler": {
+    "solc": "0.8.28",
+    "viaIR": true,
+    "optimizerRuns": 10000,
+    "evmVersion": "cancun"
+  },
+  "audit": {
+    "date": "2026-10-20",
+    "result": "no critical/high/medium; three low findings fixed in this build (dust listings, non-sticky suspension, endpoint markup bytes)",
+    "informational": [
+      "no cancel-unbond",
+      "GUARDIAN immutable: no rotation path, redeploy to change",
+      "activeRelays() unpaginated; indexers replay RelayStatus"
+    ]
+  },
+  "verification": {
+    "onchain": {
+      "STAKE_TOKEN": "0x2796cdF7328916e0A6c04C296A72C5C6d70B3AEE",
+      "MIN_STAKE": "5000000000000000000000000",
+      "UNBONDING_SECONDS": "1209600",
+      "GUARDIAN": "0x9CF17a6E3c75D200f58283A165C442a8A3994555",
+      "relayCount": "0"
+    },
+    "runtimeMatchesBuild": true,
+    "parametersMatch": true
+  },
+  "recordedAt": "2026-10-22T03:41:07.346Z"
+}
