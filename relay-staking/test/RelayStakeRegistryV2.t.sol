@@ -406,6 +406,36 @@ contract RelayStakeRegistryV2Test {
         registry.acceptOwnership(KEY2);
     }
 
+    /// Re-review residual: an offer made before rotating onto the pending owner cannot make the owner its own relay key.
+    function testOwnerCannotBecomeItsRelayViaRotation() public {
+        register(OWNER, KEY, MIN);
+        vm.prank(OWNER);
+        registry.transferOwnership(KEY, KEY2);
+        rotate(OWNER, KEY, KEY2);
+        vm.prank(KEY2);
+        vm.expectRevert(RelayStakeRegistryV2.OwnerIsRelay.selector);
+        registry.acceptOwnership(KEY2);
+        check(registry.relayOwner(KEY2) == OWNER, 'owner unchanged');
+    }
+
+    function testSuspendedOwnerCanCancelAnOfferAndKeysCanCancelConsent() public {
+        register(OWNER, KEY, MIN);
+        vm.prank(OWNER);
+        registry.transferOwnership(KEY, OWNER2);
+        vm.prank(SAFE);
+        registry.suspend(OWNER, 'sybil');
+        vm.prank(OWNER);
+        registry.transferOwnership(KEY, address(0));
+        check(registry.pendingOwner(KEY) == address(0), 'offer cancelled while suspended');
+        // An unused consent dies when the key cancels it.
+        bytes memory c = consent(KEY2, OWNER2);
+        vm.prank(KEY2);
+        registry.cancelConsent();
+        vm.prank(OWNER2);
+        vm.expectRevert(RelayStakeRegistryV2.InvalidConsent.selector);
+        registry.register(KEY2, URL, MIN, c);
+    }
+
     function testUnbondAndEndpointRules() public {
         register(OWNER, KEY, MIN + 10e18);
         vm.startPrank(OWNER);

@@ -61,6 +61,7 @@ contract RelayStakeRegistryV2 is ReentrancyGuard, EIP712 {
     event UnbondStarted(address indexed relay, uint128 amount, uint128 stake, uint64 availableAt);
     event Withdrawn(address indexed relay, address indexed owner, uint128 amount);
     event RelayerRotated(address indexed previousRelay, address indexed relay, address indexed owner);
+    event ConsentCancelled(address indexed relay, uint256 nonce);
     event OwnershipOffered(address indexed relay, address indexed owner, address indexed pendingOwner);
     event OwnerSet(address indexed relay, address indexed previousOwner, address indexed owner);
     event Suspended(address indexed account, bytes32 indexed reason);
@@ -204,7 +205,8 @@ contract RelayStakeRegistryV2 is ReentrancyGuard, EIP712 {
     /// @dev A suspended owner cannot hand over, so a transfer can never shed an owner suspension.
     function transferOwnership(address relay, address newOwner) external nonReentrant onlyOwnerOf(relay) {
         if (newOwner == relay) revert OwnerIsRelay();
-        if (suspended[newOwner] || suspended[msg.sender]) revert RelaySuspended();
+        // Cancelling (zero) is always allowed; offering is not while either side is suspended.
+        if (newOwner != address(0) && (suspended[newOwner] || suspended[msg.sender])) revert RelaySuspended();
         _relays[relay].pendingOwner = newOwner;
         emit OwnershipOffered(relay, msg.sender, newOwner);
     }
@@ -213,6 +215,7 @@ contract RelayStakeRegistryV2 is ReentrancyGuard, EIP712 {
         Relay storage r = _relays[relay];
         if (!r.listed) revert NotRelay();
         if (msg.sender != r.pendingOwner || msg.sender == address(0)) revert NotOwner();
+        if (msg.sender == relay) revert OwnerIsRelay(); // offered before a rotation onto the pending owner
         if (suspended[msg.sender] || suspended[r.owner]) revert RelaySuspended();
         emit OwnerSet(relay, r.owner, msg.sender);
         r.owner = msg.sender;
@@ -246,6 +249,11 @@ contract RelayStakeRegistryV2 is ReentrancyGuard, EIP712 {
         if (r.stake == 0) _remove(relay);
         STAKE_TOKEN.safeTransfer(owner, amount);
         emit Withdrawn(relay, owner, amount);
+    }
+
+    /// @notice Called by a relay key to void every consent it has signed and not yet had used.
+    function cancelConsent() external {
+        emit ConsentCancelled(msg.sender, nonces[msg.sender]++);
     }
 
     // ------------------------------------------------------------ guardian
