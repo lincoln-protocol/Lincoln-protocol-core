@@ -69,6 +69,22 @@ The adapter was tested on its own on a mainnet fork: private buy and sell of 0.0
 
 A fee-on-transfer token (TORCH) made the buy revert with the note unspent. The V4 routes have not yet gone through the factory on a fork.
 
+## Mainnet deploy ([script/deploy-mainnet.mjs](script/deploy-mainnet.mjs))
+
+Not deployed. Two parameters are open and have no defaults: the screening delay (at least 10 minutes) and the screening list admin. Pin them only after the fix re-review:
+
+```sh
+forge build
+node script/deploy-mainnet.mjs --pin --screening-delay <seconds> --screening-admin <0x…>   # writes deploy-plan.json
+node script/deploy-mainnet.mjs --plan                                                       # read-only preflight, predicted addresses
+script/deploy-mainnet.sh                                                                    # lincoln-deployer, your own terminal
+node script/deploy-mainnet.mjs --verify
+```
+
+Ten transactions from lincoln-deployer: ScreeningList, PoolDeployer, ProviderDeployer, V3RouteDeployer, V4RouteDeployer, LincolnMemeFactory (base pools: the live ETH and USDG pools), then `setFactory` on the four deployers. Each address is predicted from the deployer's nonce and checked against its receipt; `deploy-state.json` lets an interrupted rollout resume. Verification compares every runtime with this build (immutables blanked, Poseidon linked to the live libraries) and reads back every parameter and binding. The record goes to `deployments/robinhood-mainnet/meme-factory.json`.
+
+Rehearsed on a mainnet fork on 2026-10-25 as lincoln-deployer (impersonated: same nonce, same addresses), with placeholder parameters (3600 s, the Safe): all ten transactions landed at their predicted addresses, every check passed, and a stranger then opened a PONS pool (7.80M gas) and a USDG to PONS V3 route (3.20M gas).
+
 ## Audit, 2026-10-21
 
 An independent review of c76f4c2 (run by the backend session, PoCs in Foundry) found:
