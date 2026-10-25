@@ -41,8 +41,8 @@ interface IAssetPool {
 /// @dev Each pool is the unchanged RC.3 pool with no deposit caps, bound in the same transaction to
 /// its own AutoApproveProvider, so no operator runs its association set. Base pools (the live ETH
 /// and USDG pools) are fixed at construction; every route has at least one factory pool. Adapters
-/// deployed here are the trusted depositors the providers approve at once, because each adapter
-/// deposit comes from a note already approved in the source pool.
+/// deployed here are recorded (isRouteAdapter) but not trusted: their deposits wait the screening
+/// delay like any other, because a route can trade through a venue its creator controls (audit F-1).
 contract LincolnMemeFactory {
     uint8 public constant ROUTE_V3 = 0;
     uint8 public constant ROUTE_V4 = 1;

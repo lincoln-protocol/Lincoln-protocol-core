@@ -166,7 +166,7 @@ contract AuditFixesTest is Base {
             provider.sync(one(50_000 + t));
             published++;
         }
-        check(published >= 14, 'attacker published at the maximum rate');
+        check(published >= 59 minutes / interval - 1, 'attacker published at the maximum rate');
         vm.warp(START + 59 minutes);
         pool.transact([uint256(0), 0], [[uint256(0), 0], [uint256(0), 0]], [uint256(0), 0], victim, data, pair);
     }

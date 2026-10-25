@@ -25,15 +25,16 @@ interface IScreenedPool {
 ///   trusted at once: their value comes from whatever venue the route trades through, which anyone
 ///   can create (audit 2026-10-21, F-1). The Safe can exclude the commitment, or deny the adapter.
 /// Approved leaves are published as a new registry policy at most once per MIN_PUBLISH_INTERVAL, so
-/// sixteen epochs take longer than the registry's one-hour grace and no caller can push in-flight
+/// sixteen epochs take well over the registry's one-hour grace (75 minutes) and no caller can push in-flight
 /// proofs out of the accepted window (audit F-2). Clients prove against the first
 /// publishedLeafCount leaves. The registry guardian (the Safe) can still suspend this provider,
 /// which halts normal spending but never holder exits or ragequits.
 contract AutoApproveProvider {
     uint256 public constant TREE_DEPTH = 20;
     uint64 public constant POLICY_LIFETIME = 30 days;
-    /// @dev >= 1 hour / ACCEPTED_POLICY_WINDOW (16) = 225 s.
-    uint64 public constant MIN_PUBLISH_INTERVAL = 4 minutes;
+    /// @dev 15 intervals must exceed the registry's 1-hour superseded-policy grace: 15 x 5 min = 75 min, with margin
+    ///      (4 minutes would meet it exactly; re-review 2026-10-25, I-3).
+    uint64 public constant MIN_PUBLISH_INTERVAL = 5 minutes;
     /// @dev Within this margin of expiry the unchanged root may be republished.
     uint64 public constant RENEW_MARGIN = 1 days;
     uint64 public constant MIN_SCREENING_DELAY = 10 minutes;
@@ -104,9 +105,14 @@ contract AutoApproveProvider {
     }
 
     /// @notice Whether publish() would publish now.
+    /// @dev False while the registry has suspended this provider (or rotated away from it), so sync still records
+    ///      deposits during a suspension (re-review I-1). True after a resume whose revocation covers the latest
+    ///      epoch, so spending recovers at the next interval instead of at the renewal margin (re-review L-1).
     function canPublish() public view returns (bool) {
         if (address(pool) == address(0) || block.timestamp < uint256(lastPublishedAt) + MIN_PUBLISH_INTERVAL) return false;
-        return nextIndex != publishedLeafCount || block.timestamp + RENEW_MARGIN >= policyValidUntil;
+        if (REGISTRY.providerSuspended() || REGISTRY.PROVIDER() != address(this)) return false;
+        (, uint64 epoch, ) = REGISTRY.latestPolicy();
+        return nextIndex != publishedLeafCount || block.timestamp + RENEW_MARGIN >= policyValidUntil || epoch <= REGISTRY.revokedThroughEpoch();
     }
 
     function bind(address target) external {

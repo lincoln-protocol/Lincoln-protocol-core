@@ -267,8 +267,10 @@ contract FactoryTest is Base {
         registry.suspendProvider();
         check(registry.providerSuspended(), 'suspended');
         skip(provider.MIN_PUBLISH_INTERVAL());
-        vm.expectRevert(Phase2ASPRegistry.ProviderIsSuspended.selector);
-        provider.publish();
+        check(!provider.canPublish() && !provider.publish(), 'no publish while suspended');
+        vm.prank(SAFE);
+        registry.resumeProvider();
+        check(provider.publish(), 'the pending leaf publishes after the resume');
     }
 
     // ---------- routes ----------
@@ -296,14 +298,14 @@ contract FactoryTest is Base {
         factory.createV3Route(address(baseEth), address(pool), abi.encodePacked(address(weth), uint24(3000), address(meme)));
     }
 
-    function testV4RoutesAreRecordedAndTrusted() public {
+    function testV4RoutesAreRecorded() public {
         (Phase2ASPPool pool, AutoApproveProvider provider) = open();
         // Native ETH sorts first, so ETH is currency0.
         V4PoolKey memory key = V4PoolKey(address(0), address(meme), 10_000, 200, address(0));
         manager.initialize(MockV4PoolManager.PoolKey(key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks), 2 ** 96);
         address buy = factory.createV4Route(address(baseEth), address(pool), key);
         address sell = factory.createV4Route(address(pool), address(baseEth), key);
-        check(factory.isRouteAdapter(buy) && factory.isRouteAdapter(sell), 'trusted');
+        check(factory.isRouteAdapter(buy) && factory.isRouteAdapter(sell), 'recorded as route adapters');
         Phase2FeeV4Adapter adapter = Phase2FeeV4Adapter(payable(buy));
         check(adapter.ZERO_FOR_ONE() && !Phase2FeeV4Adapter(payable(sell)).ZERO_FOR_ONE(), 'directions');
         check(address(adapter.POOL_MANAGER()) == address(manager) && adapter.TREASURY() == TREASURY && adapter.FEE_BPS() == 30, 'fixed manager, fee and treasury');
